@@ -1,0 +1,11 @@
+# Ignore all files and directories starting with a dot
+.*
+
+# But do track the .gitignore file itself
+!.gitignore
+
+# ignore compiled bytecode files 
+__pycache__
+
+# Enforce LF endings for all files in the repository
+* text=auto eol=lf
