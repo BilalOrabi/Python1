@@ -39,21 +39,3 @@ class Plant:
 
     def get_name(self):
         return self._name
-
-def main():
-    print("=== Garden Security System ===")
-
-    plant = Plant("Rose", 25, 30)
-
-    print()
-    plant.set_height(-5)
-
-    print()
-    print(
-        f"Current plant: {plant.get_name()} "
-        f"({plant.get_height()}cm, {plant.get_age()} days)"
-    )
-
-if __name__ == "__main__":
-    
-    main()
