@@ -3,9 +3,7 @@ class Plant:
         self._name = name
         self._height = 0
         self._age = 0
-        
         print(f"Plant created: {self._name}")
-        
         if height is not None:
             self.set_height(height)
         if age is not None:
@@ -40,6 +38,7 @@ class Plant:
     def get_name(self):
         return self._name
 
+
 def main():
     print("=== Garden Security System ===")
 
@@ -54,6 +53,6 @@ def main():
         f"({plant.get_height()}cm, {plant.get_age()} days)"
     )
 
+
 if __name__ == "__main__":
-    
     main()

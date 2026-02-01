@@ -3,7 +3,6 @@ class Plant:
         self._name = name
         self._height = 0
         self._age = 0
-        
         if height is not None:
             self.set_height(height)
         if age is not None:
@@ -90,6 +89,7 @@ class Vegetable(Plant):
             f"{self._name} is rich in {self.nutritional_value}"
         )
 
+
 def main():
     print("=== Garden Plant Types ===\n")
 
@@ -111,4 +111,4 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+    main()
