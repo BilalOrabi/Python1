@@ -12,7 +12,7 @@ def check_temperature(temp_str: str) -> str:
         String message indicating if temperature is valid for plants.
     """
     try:
-        temp = int(temp_str)
+        temp: int = int(temp_str)
 
         if temp < 0:
             return f"Error: {temp}°C is too cold for plants (min 0°C)"
