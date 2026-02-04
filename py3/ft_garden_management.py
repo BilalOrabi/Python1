@@ -61,6 +61,17 @@ class GardenManager:
                     raise WaterError(
                         f"Water level {plant.water_level} is too high "
                         f"(max 10)")
+
+                if plant.water_level < 1:
+                    raise WaterError(
+                        f"Water level {plant.water_level} is too low "
+                        f"(min 1)")
+
+                if plant.water_level > 12:
+                    raise WaterError(
+                        f"Water level {plant.water_level} is too high "
+                        f"(max 12)")
+
                 if plant.sunlight_hours < 2:
                     raise GardenError(
                         f"Sunlight level {plant.sunlight_hours} is too low "
