@@ -22,11 +22,16 @@ def transform_content(content: str) -> str:
     return "\n".join(result)
 
 
-def save_file(filename: str, content: str) -> None:
+def save_file(filename: str, content: str) -> bool:
     file = None
     try:
         file = open(filename, "w")
         file.write(content + "\n")
+        return True
+    except OSError as e:
+        print(
+            f"[STDERR] Error opening file '{filename}': {e}", file=sys.stderr)
+        return False
     finally:
         if file:
             file.close()
@@ -58,17 +63,21 @@ def main() -> None:
         print(transformed)
         print("\n---")
 
-        new_filename = input("Enter new file name (or empty): ")
+        print("Enter new file name (or empty): ", end="", flush=True)
+        new_filename = sys.stdin.readline().rstrip("\n")
 
         if new_filename:
-            save_file(new_filename, transformed)
             print(f"Saving data to '{new_filename}'")
-            print(f"Data successfully saved to '{new_filename}'")
+            if save_file(new_filename, transformed):
+                print(f"Data successfully saved to '{new_filename}'")
+            else:
+                print("Data not saved.")
         else:
             print("Not saving data.")
 
     except OSError as e:
-        print(f"Error opening file '{filename}': {e}")
+        print(
+            f"[STDERR] Error opening file '{filename}': {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
