@@ -2,10 +2,11 @@ from .dark_spellbook import dark_spell_allowed_ingredients
 
 
 def validate_ingredients(ingredients: str) -> str:
-    allowed = dark_spell_allowed_ingredients()
-    ingredients_lower = ingredients.lower()
+    allowed: list[str] = dark_spell_allowed_ingredients()
+    lowered_ingredients: str = ingredients.lower()
 
-    for i in allowed:
-        if i in ingredients_lower:
+    for ingredient in allowed:
+        if ingredient in lowered_ingredients:
             return f"{ingredients} - VALID"
+
     return f"{ingredients} - INVALID"
