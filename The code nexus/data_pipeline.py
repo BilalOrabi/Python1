@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 
 class DataProcessor(ABC):
@@ -21,7 +21,6 @@ class DataProcessor(ABC):
             raise IndexError("No data to output")
         return self._data_store.pop(0)
 
-    @property
     def total_processed(self) -> int:
         return self._total_processed
 
@@ -119,6 +118,41 @@ class LogProcessor(DataProcessor):
             self._total_processed += 1
 
 
+class ExportPlugin(Protocol):
+
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        pass
+
+
+class CSVExportPlugin:
+
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+
+        values = []
+
+        for _, value in data:
+            values.append(value)
+
+        print("CSV Output:")
+        print(",".join(values))
+
+
+class JSONExportPlugin:
+
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+
+        json_parts = []
+
+        for rank, value in data:
+
+            json_parts.append(
+                f'{{"rank": {rank}, "value": "{value}"}}'
+            )
+
+        print("JSON Output:")
+        print("[" + ", ".join(json_parts) + "]")
+
+
 class DataStream:
 
     def __init__(self) -> None:
@@ -158,24 +192,45 @@ class DataStream:
             name = proc.__class__.__name__.replace("Processor", " Processor")
 
             print(
-                f"{name}: total {proc.total_processed} items processed, "
+                f"{name}: total {proc.total_processed()} items processed, "
                 f"remaining {proc.remaining} on processor"
             )
+
+    def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
+
+        for proc in self._processors:
+
+            extracted: list[tuple[int, str]] = []
+
+            for _ in range(nb):
+
+                try:
+                    extracted.append(proc.output())
+                except IndexError:
+                    break
+
+            if extracted:
+                plugin.process_output(extracted)
 
 
 if __name__ == "__main__":
 
-    print("=== Code Nexus- Data Stream ===")
+    print("=== Code Nexus- Data Pipeline ===")
 
     stream = DataStream()
 
     print("Initialize Data Stream...")
     stream.print_processors_stats()
 
-    print("\nRegistering Numeric Processor")
+    print("\nRegistering Processors")
 
     numeric = NumericProcessor()
+    text = TextProcessor()
+    logs = LogProcessor()
+
     stream.register_processor(numeric)
+    stream.register_processor(text)
+    stream.register_processor(logs)
 
     batch = [
         "Hello world",
@@ -200,32 +255,21 @@ if __name__ == "__main__":
 
     stream.print_processors_stats()
 
-    print("\nRegistering other data processors")
+    print("\nSend 3 processed data from each processor to a CSV plugin:")
 
-    text = TextProcessor()
-    logs = LogProcessor()
-
-    stream.register_processor(text)
-    stream.register_processor(logs)
-
-    print("Send the same batch again")
-
-    stream.process_stream(batch)
-
+    csv_plugin = CSVExportPlugin()
+    stream.output_pipeline(3, csv_plugin)
     stream.print_processors_stats()
 
-    print(
-        "\nConsume some elements from the data processors: "
-        "Numeric 3, Text 2, Log 1"
-    )
+    print("\nSend the same batch again")
 
-    for _ in range(3):
-        numeric.output()
+    stream.process_stream(batch)
+    stream.print_processors_stats()
 
-    for _ in range(2):
-        text.output()
+    print("\nSend 2 processed data from each processor to a JSON plugin:")
 
-    for _ in range(1):
-        logs.output()
+    json_plugin = JSONExportPlugin()
+
+    stream.output_pipeline(2, json_plugin)
 
     stream.print_processors_stats()
